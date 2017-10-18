@@ -1,0 +1,12 @@
+{
+  "AmazonS3AccessKey": "123456",
+  "AmazonS3SecretKey": "12345678901234567",
+  "TargetFolder": "E:/S3/",
+  "ServiceURL": "http://xxxxxx.amazonaws.com/",
+  "BucketName": "mybacket-name",
+  "Keys": [
+    "directory1/file1.Txt",
+    "dir2/file2.Txt",
+    "dir2/zipfile.Zip"
+  ]
+}
