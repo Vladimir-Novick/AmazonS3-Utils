@@ -12,7 +12,7 @@ using System.IO.Compression;
 ////////////////////////////////////////////////////////////////////////////
 //	Copyright 2017 : Vladimir Novick    https://www.linkedin.com/in/vladimirnovick/  
 //        
-//             https://github.com/Vladimir-Novick/CSharp-Utility-Classes
+//             https://github.com/Vladimir-Novick/AmazonS3-Utils
 //
 //    NO WARRANTIES ARE EXTENDED. USE AT YOUR OWN RISK. 
 //
@@ -22,7 +22,7 @@ using System.IO.Compression;
 
 namespace HttpFileReader
 {
-    public class AmasonS3FileReader
+    public class AmazonS3FileReader
     {
         public AmazonS3Client GetAmazonS3Client()
         {
