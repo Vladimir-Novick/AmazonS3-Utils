@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 ////////////////////////////////////////////////////////////////////////////
 //	Copyright 2017 : Vladimir Novick    https://www.linkedin.com/in/vladimirnovick/  
 //        
-//             https://github.com/Vladimir-Novick/CSharp-Utility-Classes
+//             https://github.com/Vladimir-Novick/AmazonS3-Utils
 //
 //    NO WARRANTIES ARE EXTENDED. USE AT YOUR OWN RISK. 
 //
@@ -15,26 +13,25 @@ using System.Text;
 //
 ////////////////////////////////////////////////////////////////////////////
 
-namespace HttpFileReader.Config
+namespace SGCombo.AmazonS3
 {
-    public class HttpFileReaderConfig
+    public class AmazonS3Config
     {
 
-        // CrawlerConfig.GetConfigData
 
-        public static HttpFileReaderConfigData GetConfigData { get; set;  }
-
+        public static AmazonS3ConfigData GetConfigData { get; set;  }
 
 
-        public static void GetConfiguration(String configFile = "config.json")
+
+        public static void GetConfiguration(String configFile = "AmazonConfig.json")
         {
             String pathToTheFile = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + configFile;
 
-            GetConfigData = new HttpFileReaderConfigData();
+            GetConfigData = new AmazonS3ConfigData();
             using (StreamReader file = File.OpenText(pathToTheFile))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                GetConfigData = (HttpFileReaderConfigData)serializer.Deserialize(file, typeof(HttpFileReaderConfigData));
+                GetConfigData = (AmazonS3ConfigData)serializer.Deserialize(file, typeof(AmazonS3ConfigData));
             }
 
         }

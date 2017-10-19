@@ -1,0 +1,22 @@
+{
+  "AmazonS3AccessKey": "123456",
+  "AmazonS3SecretKey": "444444444444444444444444444",
+  "AmazonS3ServiceURL": "http://xxxxxxx.amazonaws.com/",
+  "AmazonS3DeltaTime": 1,
+  "AmazonS3BucketName": "vvvvvvvvvvvvv",
+  "Keys": [
+    {
+      "AmazonS3Key": "dddddd/zzzzz.Txt",
+      "LocalFileName": "e:/d/S3/hhhh.Txt"
+    },
+    {
+      "AmazonS3Key": "ddddffdd/zzzszz.Txt",
+      "LocalFileName": "e:/d/S3/hhh2h.Txt"
+    },
+    {
+      "AmazonS3Key": "dddsssddd/zz222zzz.zip",
+      "LocalFileName": "e:/d/S3/zip/heeehhh.zip"
+    }	  
+   
+  ]
+}

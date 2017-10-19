@@ -1,9 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using HttpFileReader.Config;
 using System;
 using System.Collections.Generic;
-using Utils;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
@@ -20,25 +18,28 @@ using System.IO.Compression;
 //
 ////////////////////////////////////////////////////////////////////////////
 
-namespace HttpFileReader
+namespace SGCombo.AmazonS3
 {
     public class AmazonS3FileReader
     {
-        public AmazonS3Client GetAmazonS3Client()
+        private AmazonS3Client GetAmazonS3Client()
         {
             AmazonS3Client _client = new AmazonS3Client(
-                    HttpFileReaderConfig.GetConfigData.AmazonS3AccessKey,
-                    HttpFileReaderConfig.GetConfigData.AmazonS3SecretKey,
-                    new AmazonS3Config { ServiceURL = HttpFileReaderConfig.GetConfigData.ServiceURL }
+                    AmazonS3Config.GetConfigData.AmazonS3AccessKey,
+                    AmazonS3Config.GetConfigData.AmazonS3SecretKey,
+                    new Amazon.S3.AmazonS3Config { ServiceURL = AmazonS3Config.GetConfigData.AmazonS3ServiceURL }
             );
             return _client;
         }
 
-
-        public  List<S3Object> FileDownloader()
+        /// <summary>
+        ///   Download new/Updated AmazonS3 files and return AmazonS3 keys 
+        /// </summary>
+        /// <returns></returns>
+        public  List<String> FileDownloader()
         {
 
-            List<S3Object> ret = new List<S3Object>();
+            List<String> ret = new List<String>();
 
             try
             {
@@ -46,40 +47,42 @@ namespace HttpFileReader
                 using (AmazonS3Client s3Client = GetAmazonS3Client()) {
                     try
                     {
-                        List<S3Object> chekS3Objects = new List<S3Object>();
-
                         ListObjectsRequest request = new ListObjectsRequest();
-                        request.BucketName = HttpFileReaderConfig.GetConfigData.BucketName;
+                        request.BucketName = AmazonS3Config.GetConfigData.AmazonS3BucketName;
                         Task<ListObjectsResponse> task = s3Client.ListObjectsAsync(request);
                         task.Wait();
 
                         ListObjectsResponse response = task.Result;
 
-                        List<String> keys = HttpFileReaderConfig.GetConfigData.Keys;
+                        List<AmazonS3ConfigDataKeys> keys = AmazonS3Config.GetConfigData.Keys;
 
                         foreach (S3Object item in response.S3Objects)
                         {
-                            String itemF = keys.FirstOrDefault(o => o == item.Key) ;
-                            if (itemF != null)
+                            AmazonS3ConfigDataKeys itemF = keys.FirstOrDefault(o => o.AmazonS3Key == item.Key) ;
+                            try
                             {
-                                chekS3Objects.Add(item);
-                                ReadAmasonFile(s3Client,item);
+                                if (itemF != null)
+                                {
+
+                                    ReadAmazonFile(s3Client, item, itemF);
+                                }
+                                ret.Add(item.Key); 
                             }
+                            catch (Exception) { }
+
+                          
                         }
 
 
-                        var fileNameListOfFiles = HttpFileReaderConfig.GetConfigData.TargetFolder + "ListObjects.json";
-                        var logWriter = System.IO.File.CreateText(fileNameListOfFiles);
-                        logWriter.WriteLine(chekS3Objects.ToJson());
-                        logWriter.Dispose();
-                    } catch ( Exception ex)
+
+                    } catch ( Exception )
                     {
 
                     }
                 }
 
             }
-            catch (Exception ex) { }
+            catch (Exception ) { }
             return ret ;
         }
 
@@ -93,10 +96,10 @@ namespace HttpFileReader
             }
         }
 
-        private void ReadAmasonFile(AmazonS3Client s3Client,S3Object item)
+        private void ReadAmazonFile(AmazonS3Client s3Client,S3Object item, AmazonS3ConfigDataKeys configKey)
         {
             String[] k = item.Key.Split("/");
-            String filename = HttpFileReaderConfig.GetConfigData.TargetFolder + k[k.Length - 1];
+            String filename = configKey.LocalFileName;
 
             FileInfo fileInfo = new FileInfo(filename);
 
@@ -104,7 +107,7 @@ namespace HttpFileReader
             {
                 try
                 {
-                    Task<GetObjectResponse> taskGetObjectResponse = s3Client.GetObjectAsync(HttpFileReaderConfig.GetConfigData.BucketName, item.Key);
+                    Task<GetObjectResponse> taskGetObjectResponse = s3Client.GetObjectAsync(AmazonS3Config.GetConfigData.AmazonS3BucketName, item.Key);
                     taskGetObjectResponse.Wait();
                     using (GetObjectResponse getObjRespone = taskGetObjectResponse.Result)
                     {
@@ -124,10 +127,13 @@ namespace HttpFileReader
                     string ext = Path.GetExtension(filename).ToLower();
                     if (ext == ".zip")
                     {
-                        ZipFile.ExtractToDirectory(filename, HttpFileReaderConfig.GetConfigData.TargetFolder,true);
+                        String strTargetFolder = configKey.LocalFileName;
+                       
+                        String strFolder = Path.GetDirectoryName(strTargetFolder);
+                        ZipFile.ExtractToDirectory(filename, strFolder, true);
                     }
                 }
-                catch (Exception ex) {
+                catch (Exception ) {
                 }
             }
         }
